@@ -3,12 +3,8 @@ import './TaskList.css'
 
 const TaskList = ({toDos, onDeleted, onEditProperty}) => {
 
-
-
-
     const elements = toDos.map((item) => {
         let classNames = "";
-        console.log(item)
         if (item.isDone) {
             classNames += " completed";
         }

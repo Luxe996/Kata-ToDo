@@ -1,30 +1,13 @@
 import {Component} from "react";
 
 export class Task extends Component {
-
-    constructor() {
-        super();
-
-        this.state = {
-            done:false
-        }
-
-        // this.onToggleProperty = () => {
-        //    this.setState(({done}) => {
-        //        return {
-        //            done:!done
-        //        }
-        //
-        //    })
-        // }
-    }
     render() {
-        const {description, onDeleted, id} = this.props
+        const {description, onDeleted, id,onEditProperty, isDone} = this.props
         return (
             <div className="view">
                 <input className="toggle"
-                       onChange={() => this.props.onEditProperty('isDone', id)}
-                       checked={this.props.isDone}
+                       onChange={() => onEditProperty('isDone', id)}
+                       checked={isDone}
                        type="checkbox"/>
                 <label>
                     <span className="description">{description}</span>
