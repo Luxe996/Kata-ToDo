@@ -1,12 +1,19 @@
-import {Task} from "../Task/Task";
+import {Task} from './Task/Task'
 import './TaskList.css'
 
-const TaskList = () => {
+const TaskList = ({toDos}) => {
+    const elements = toDos.map((item) => {
+
+        const {id, ...itemProps} = item
+        return (
+            <li className="completed" key={id}>
+                <Task {...itemProps} />
+            </li>
+        )
+    })
     return (
         <ul className="todo-list">
-            <li className="completed">
-            <Task />
-            </li>
+            {elements}
         </ul>
     )
 }
