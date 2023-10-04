@@ -10,14 +10,13 @@ const TaskList = ({toDos, onDeleted, onEditProperty}) => {
         let classNames = "";
         console.log(item)
         if (item.isDone) {
-            console.log()
             classNames += " completed";
         }
         return (
             <li className={classNames} key={item.id}>
                 <Task
                     {...item}
-                    onDeleted = {() => onDeleted}
+                    onDeleted = {onDeleted}
                     onEditProperty = {onEditProperty}
                 />
             </li>
