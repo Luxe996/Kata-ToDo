@@ -62,7 +62,6 @@ export class App extends Component  {
             isEditing: false,
             id:this.maxId++
         }
-
         this.setState(({initialState}) => {
             const newArray = [
                 ...initialState, newTask
@@ -71,6 +70,9 @@ export class App extends Component  {
                 initialState: newArray
             }
         })
+    }
+    countTaskActive = () => {
+        return this.state.initialState.filter((task) => !task.isDone).length;
     }
     render() {
         return (
@@ -85,8 +87,11 @@ export class App extends Component  {
                             toDos = {this.state.initialState}
                             onDeleted = { this.deleteItem}
                             onEditProperty = {this.editProperty}
+
                         />
-                        <Footer/>
+                        <Footer
+                            taskCount = {this.countTaskActive}
+                        />
                     </section>
                 </section>
             </div>
