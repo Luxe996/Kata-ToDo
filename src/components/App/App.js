@@ -80,7 +80,7 @@ export class App extends Component  {
                 <section className="todoapp">
                     <header className="header">
                         <h1>todos</h1>
-                        <NewTaskForm/>
+                        <NewTaskForm addTask = {this.addTask}/>
                     </header>
                     <section className="main">
                         <TaskList
