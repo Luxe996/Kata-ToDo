@@ -2,33 +2,88 @@ import TaskList from "../TaskList/TaskList";
 import {Footer} from "../Footer/Footer";
 import {NewTaskForm} from "../NewTaskForm/NewTaskForm";
 import {Component} from "react";
+import PropTypes from 'prop-types';
 import './App.css'
 
-export class App extends Component  {
-
-    maxId = 100;
-    state = {
-        initialState : [{
-            description: "Completed task",
-            isDone: true,
-            isEditing: false,
-            id: 1,
-        }, {
-            description: "Editing task",
-            isDone: false,
-            isEditing: true,
-            id: 2,
-        }, {
-            description: "Active task",
-            isDone: false,
-            isEditing: false,
-            id: 3,
-        }]
+export class App extends Component {
+    currentID = 1;
+    incrementID = () => {
+        return this.currentID++
     }
+
+    findIndexByID = (id) => {
+        return this.state.initialState.findIndex((task) => task.id === id);
+    };
+
+    createTask = (description, isDone = false, isEditing = false, createdDate = new Date(), id = this.incrementID()) => {
+        return {
+            description,
+            isDone,
+            isEditing,
+            createdDate,
+            id
+        }
+    }
+
+    addTask = (label) => {
+        const newTask = this.createTask(label)
+
+        this.setState((state) => {
+            const newArray = [
+                ...state.initialState, newTask
+            ]
+            return {
+                initialState: newArray
+            }
+        })
+    }
+
+    onChangeDescription = (description, id) => {
+        this.setState(({initialState}) => {
+
+            const idx = this.findIndexByID(id)
+
+            const modifiedTaskData = {
+                ...initialState[idx],
+                description
+            };
+            const modifiedTasksData = [
+                ...initialState.slice(0, idx),
+                modifiedTaskData,
+                ...initialState.slice(idx + 1)
+            ];
+
+            return {
+                initialState: modifiedTasksData
+            };
+        });
+    };
+
+    onFinishEditing = (id) => {
+        this.setState(({initialState}) => {
+            const index = this.findIndexByID(id);
+
+            const modifiedTaskData = {
+                ...initialState[index],
+                isEditing: false
+            };
+
+            const modifiedTasksData = [
+                ...initialState.slice(0, index),
+                modifiedTaskData,
+                ...initialState.slice(index + 1)
+            ];
+
+            return {
+                initialState: modifiedTasksData
+            };
+        });
+    };
+
     deleteItem = (id) => {
         this.setState(({initialState}) => {
-            const idx = initialState.findIndex((el) => el.id === id)
-            const newArray = [...initialState.slice(0, idx), ...initialState.slice(idx+1)]
+            const idx = this.findIndexByID(id)
+            const newArray = [...initialState.slice(0, idx), ...initialState.slice(idx + 1)]
 
             return {
                 initialState: newArray
@@ -38,7 +93,7 @@ export class App extends Component  {
 
     editProperty = (property, id) => {
         this.setState(({initialState}) => {
-            const idx = initialState.findIndex((el) => el.id === id)
+            const idx = this.findIndexByID(id)
 
             const modifiedTaskData = {
                 ...initialState[idx],
@@ -55,48 +110,69 @@ export class App extends Component  {
         })
     }
 
-    addTask = (label) => {
-        const newTask = {
-            description: label,
-            isDone:false,
-            isEditing: false,
-            id:this.maxId++
-        }
-        this.setState(({initialState}) => {
-            const newArray = [
-                ...initialState, newTask
-            ]
-            return{
-                initialState: newArray
-            }
+    clearCompleted = () => {
+        const active = this.state.initialState.filter((task) => !task.isDone)
+
+        this.setState({
+            initialState: active
         })
     }
+
+
     countTaskActive = () => {
         return this.state.initialState.filter((task) => !task.isDone).length;
     }
+
+    handleFilterChange = (filter) => {
+        this.setState({
+            filter
+        })
+    }
+
+    state = {
+        initialState: this.props.state.initialState.map((task) => {
+            return this.createTask(task.description, task.isDone, task.isEditing);
+        }),
+        filter: this.props.filter
+    };
+
     render() {
         return (
             <div>
                 <section className="todoapp">
                     <header className="header">
                         <h1>todos</h1>
-                        <NewTaskForm addTask = {this.addTask}/>
+                        <NewTaskForm addTask={this.addTask}/>
                     </header>
                     <section className="main">
                         <TaskList
-                            toDos = {this.state.initialState}
-                            onDeleted = { this.deleteItem}
-                            onEditProperty = {this.editProperty}
+                            tasks={this.state.initialState}
+                            filter={this.state.filter}
+                            onDeleted={this.deleteItem}
+                            onEditProperty={this.editProperty}
+                            onChangeDescription={this.onChangeDescription}
+                            onFinishEditing={this.onFinishEditing}
+
 
                         />
                         <Footer
-                            taskCount = {this.countTaskActive}
+                            filter={this.state.filter}
+                            onFilterChange={this.handleFilterChange}
+                            taskCount={this.countTaskActive}
+                            clearCompleted={this.clearCompleted}
                         />
                     </section>
                 </section>
             </div>
         )
     }
-
-
 }
+
+App.defaultProps = {
+    initialState: [],
+    filter: "All"
+};
+
+App.propTypes = {
+    initialState: PropTypes.arrayOf(PropTypes.object)
+};

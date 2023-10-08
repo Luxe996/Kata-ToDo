@@ -1,8 +1,10 @@
 import {Component} from "react";
+import {formatDistanceToNow} from 'date-fns';
+import PropTypes from 'prop-types';
 
 export class Task extends Component {
     render() {
-        const {description, onDeleted, id,onEditProperty, isDone} = this.props
+        const {id, description, isDone, createdDate, onDeleted, onEditProperty} = this.props
         return (
             <div className="view">
                 <input className="toggle"
@@ -11,11 +13,20 @@ export class Task extends Component {
                        type="checkbox"/>
                 <label>
                     <span className="description">{description}</span>
-                    <span className="created">created 17 seconds ago</span>
+                    <span className="created">{formatDistanceToNow(createdDate)}</span>
                 </label>
-                <button className="icon icon-edit"></button>
+                <button className="icon icon-edit" onClick={() => onEditProperty('isEditing', id)}></button>
                 <button className="icon icon-destroy" onClick={() => onDeleted(id)}></button>
             </div>
         )
     }
 }
+
+Task.propTypes = {
+    id: PropTypes.number,
+    description: PropTypes.string,
+    isDone: PropTypes.bool,
+    createdDate: PropTypes.instanceOf(Date),
+    onDeleted: PropTypes.bool,
+    onEditProperty: PropTypes.bool,
+};

@@ -1,9 +1,10 @@
 import {Component} from "react";
+import PropTypes from 'prop-types';
 
-export class NewTaskForm extends Component  {
+export class NewTaskForm extends Component {
 
     state = {
-        value:''
+        value: ''
     }
 
     onInputChange = (e) => {
@@ -15,14 +16,24 @@ export class NewTaskForm extends Component  {
     onSubmit = (e) => {
         e.preventDefault()
         this.props.addTask(this.state.value)
+        this.setState({
+            value: ''
+        })
     }
 
     render() {
         return (
             <form onSubmit={this.onSubmit}>
-                <input className="new-todo" onChange={this.onInputChange} placeholder="What needs to be done?" autoFocus/>
+                <input className="new-todo"
+                       value={this.state.value}
+                       onChange={this.onInputChange}
+                       placeholder="What needs to be done?"
+                       autoFocus/>
             </form>
         )
     }
-
 }
+
+NewTaskForm.propTypes = {
+    addTask: PropTypes.func
+};
