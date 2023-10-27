@@ -17,7 +17,6 @@ export class App extends Component {
   }
 
   createTask = (task) => {
-    console.log(task)
     return {
       id: this.incrementID(),
       description: task.description,
