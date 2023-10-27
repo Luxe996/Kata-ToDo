@@ -8,16 +8,28 @@ const state = {
       description: 'Completed task',
       isDone: true,
       isEditing: false,
+      timer: {
+        min: 10,
+        sec: 0,
+      },
     },
     {
       description: 'Editing task',
       isDone: false,
       isEditing: true,
+      timer: {
+        min: 10,
+        sec: 0,
+      },
     },
     {
       description: 'Active task',
       isDone: false,
       isEditing: false,
+      timer: {
+        min: 10,
+        sec: 0,
+      },
     },
   ],
 }

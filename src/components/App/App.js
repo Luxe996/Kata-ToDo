@@ -16,19 +16,22 @@ export class App extends Component {
     return this.state.initialState.findIndex((task) => task.id === id)
   }
 
-  createTask = (description, isDone = false, isEditing = false, createdDate = new Date(), id = this.incrementID()) => {
+  createTask = (task) => {
     return {
-      description,
-      isDone,
-      isEditing,
-      createdDate,
-      id,
+      id: this.incrementID(),
+      description: task.description,
+      isDone: false,
+      isEditing: false,
+      createdDate: new Date(),
+      timer: {
+        min: task.timer.min,
+        sec: task.timer.sec,
+      },
     }
   }
 
-  addTask = (label) => {
-    const newTask = this.createTask(label)
-
+  addTask = (task) => {
+    const newTask = this.createTask(task)
     this.setState((state) => {
       const newArray = [...state.initialState, newTask]
       return {
@@ -116,7 +119,7 @@ export class App extends Component {
 
   state = {
     initialState: this.props.state.initialState.map((task) => {
-      return this.createTask(task.description, task.isDone, task.isEditing)
+      return this.createTask(task)
     }),
     filter: this.props.filter,
   }

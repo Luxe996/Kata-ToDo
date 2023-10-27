@@ -123,6 +123,14 @@
     content: '✎';
 }
 
+.todo-list li .icon-pause:after {
+    content: '⏸';
+}
+
+.todo-list li .icon-play:after {
+    content: '▶';
+}
+
 .todo-list li .edit {
     display: none;
 }

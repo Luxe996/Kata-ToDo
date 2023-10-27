@@ -47,7 +47,7 @@ TaskList.defaultProps = {
 }
 
 TaskList.propTypes = {
-  tasks: PropTypes.object,
+  tasks: PropTypes.array,
   filter: PropTypes.oneOf(['All', 'Active', 'Completed']),
   onDeleted: PropTypes.func,
   onEditProperty: PropTypes.func,
