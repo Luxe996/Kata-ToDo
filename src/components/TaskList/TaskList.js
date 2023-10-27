@@ -47,12 +47,12 @@ TaskList.defaultProps = {
 }
 
 TaskList.propTypes = {
-  tasks: PropTypes.array,
+  tasks: PropTypes.arrayOf(PropTypes.object).isRequired,
   filter: PropTypes.oneOf(['All', 'Active', 'Completed']),
-  onDeleted: PropTypes.func,
-  onEditProperty: PropTypes.func,
-  onChangeDescription: PropTypes.func,
-  onFinishEditing: PropTypes.func,
+  onDeleted: PropTypes.func.isRequired,
+  onEditProperty: PropTypes.func.isRequired,
+  onChangeDescription: PropTypes.func.isRequired,
+  onFinishEditing: PropTypes.func.isRequired,
 }
 
 export default TaskList

@@ -68,6 +68,6 @@ Task.propTypes = {
   description: PropTypes.string,
   isDone: PropTypes.bool,
   createdDate: PropTypes.instanceOf(Date),
-  onDeleted: PropTypes.func,
+  onDeleted: PropTypes.bool,
   onEditProperty: PropTypes.func,
 }

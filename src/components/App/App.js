@@ -17,6 +17,7 @@ export class App extends Component {
   }
 
   createTask = (task) => {
+    console.log(task)
     return {
       id: this.incrementID(),
       description: task.description,
@@ -24,8 +25,8 @@ export class App extends Component {
       isEditing: false,
       createdDate: new Date(),
       timer: {
-        min: task.timer.min,
-        sec: task.timer.sec,
+        min: task.min,
+        sec: task.sec,
       },
     }
   }
