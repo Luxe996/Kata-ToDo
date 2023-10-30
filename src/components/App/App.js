@@ -17,16 +17,14 @@ export class App extends Component {
   }
 
   createTask = (task) => {
+    const totalSec = task.min * 60 + task.sec
     return {
       id: this.incrementID(),
       description: task.description,
       isDone: false,
       isEditing: false,
       createdDate: new Date(),
-      timer: {
-        min: task.min,
-        sec: task.sec,
-      },
+      totalSec: totalSec,
     }
   }
 

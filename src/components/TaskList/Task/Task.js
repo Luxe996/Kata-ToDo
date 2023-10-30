@@ -6,44 +6,56 @@ import './Task.css'
 
 export class Task extends Component {
   state = {
-    min: this.props.timer.min,
-    sec: this.props.timer.sec,
+    totalSec: this.props.totalSec,
     paused: true,
     over: false,
   }
 
-  componentDidMount() {
-    this.timerID = setInterval(() => this.tick(), 1000)
-  }
   componentWillUnmount() {
-    clearInterval(this.timerID)
+    this.stopTimer()
+  }
+
+  startTimer = () => {
+    if (!this.timerID) {
+      this.timerID = setInterval(() => this.tick(), 1000)
+    }
+  }
+
+  stopTimer = () => {
+    if (this.timerID) {
+      clearInterval(this.timerID)
+      this.timerID = null
+    }
   }
 
   tick = () => {
-    const { min, sec, paused, over } = this.state
-    if (paused) return
-    if (over) clearInterval(this.timerID)
-    if (min === 0 && sec === 0) {
+    const { totalSec, paused, over } = this.state
+    if (paused || over) return
+    if (totalSec === 0) {
       this.setState({ over: true })
-    } else if (sec === 0) {
-      this.setState({
-        min: min - 1,
-        sec: 59,
-      })
+      this.stopTimer()
     } else {
       this.setState({
-        min: min,
-        sec: sec - 1,
+        totalSec: totalSec - 1,
       })
     }
   }
 
   onPause = (status) => {
-    this.setState({ paused: status })
+    // this.setState({ paused: status })
+    this.setState({ paused: status }, () => {
+      if (status) {
+        this.stopTimer()
+      } else {
+        this.startTimer()
+      }
+    })
   }
   render() {
     const { id, description, isDone, createdDate, onDeleted, onEditProperty } = this.props
-    const { min, sec } = this.state
+    const { totalSec } = this.state
+    const min = Math.floor(totalSec / 60)
+    const sec = totalSec % 60
     return (
       <div className="view">
         <input className="toggle" onChange={() => onEditProperty('isDone', id)} checked={isDone} type="checkbox" />
