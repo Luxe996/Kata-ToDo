@@ -1,47 +1,34 @@
 import './TaskFilter.css'
-import PropTypes from 'prop-types'
-import { Component } from 'react'
+import { useEffect, useState } from 'react'
 
-const classSelected = 'selected'
+export const TasksFilter = ({ handleFilterChange }) => {
+  const [filter, setFilter] = useState('all')
 
-export class TasksFilter extends Component {
-  getFilterButtons = () => {
-    return document.querySelectorAll('.filters button')
-  }
+  useEffect(() => {
+    handleFilterChange(filter)
+  }, [filter])
 
-  onButtonClick = (event) => {
-    if (event.target.classList.contains(classSelected)) {
-      return
-    }
-
-    const buttons = this.getFilterButtons()
-    for (let button of buttons) {
-      button.classList.remove(classSelected)
-    }
-
-    event.target.classList.add(classSelected)
-    this.props.onFilterChange(event.target.textContent)
-  }
-
-  render() {
-    return (
-      <ul className="filters">
-        <li>
-          <button onClick={this.onButtonClick} className="selected">
-            All
-          </button>
-        </li>
-        <li>
-          <button onClick={this.onButtonClick}>Active</button>
-        </li>
-        <li>
-          <button onClick={this.onButtonClick}>Completed</button>
-        </li>
-      </ul>
-    )
-  }
-}
-
-TasksFilter.propTypes = {
-  onFilterChange: PropTypes.func,
+  return (
+    <ul className="filters">
+      <li>
+        <button type="button" className={filter === 'all' ? 'selected' : null} onClick={() => setFilter('all')}>
+          All
+        </button>
+      </li>
+      <li>
+        <button type="button" className={filter === 'active' ? 'selected' : null} onClick={() => setFilter('active')}>
+          Active
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
+          className={filter === 'completed' ? 'selected' : null}
+          onClick={() => setFilter('completed')}
+        >
+          Completed
+        </button>
+      </li>
+    </ul>
+  )
 }

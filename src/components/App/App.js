@@ -1,163 +1,143 @@
-import { Component } from 'react'
-import PropTypes from 'prop-types'
+import { useState } from 'react'
 
 import TaskList from '../TaskList/TaskList'
 import { Footer } from '../Footer/Footer'
 import { NewTaskForm } from '../NewTaskForm/NewTaskForm'
+
 import './App.css'
+import timers from './timers/timers'
 
-export class App extends Component {
-  currentID = 1
-  incrementID = () => {
-    return this.currentID++
-  }
+export const App = () => {
+  const [id, setId] = useState(1)
+  const [tasksData, setTasksData] = useState([])
+  const [filter, setFilter] = useState('all')
 
-  findIndexByID = (id) => {
-    return this.state.initialState.findIndex((task) => task.id === id)
-  }
+  const addTask = (value, time, showTimer = true) => {
+    setId((id) => id + 1)
 
-  createTask = (task) => {
-    const totalSec = task.min * 60 + task.sec
-    return {
-      id: this.incrementID(),
-      description: task.description,
-      isDone: false,
-      isEditing: false,
-      createdDate: new Date(),
-      totalSec: totalSec,
-    }
-  }
-
-  addTask = (task) => {
-    const newTask = this.createTask(task)
-    this.setState((state) => {
-      const newArray = [...state.initialState, newTask]
-      return {
-        initialState: newArray,
+    setTasksData((tasksData) => {
+      const newTask = {
+        id: id,
+        label: value,
+        completed: false,
+        date: new Date(),
+        time: time,
+        isTimerOn: false,
+        showTimer: showTimer,
       }
+      const newTaskData = [...tasksData, newTask]
+      return newTaskData
+    })
+
+    if (showTimer) timerOn(id)
+  }
+
+  const deleteTask = (id, e) => {
+    if (e) e.stopPropagation()
+
+    timerOff(id)
+
+    setTasksData((tasksData) => {
+      const i = tasksData.findIndex((el) => el.id === id)
+      const newTaskData = [...tasksData]
+      newTaskData.splice(i, 1)
+      return newTaskData
     })
   }
 
-  onChangeDescription = (description, id) => {
-    this.setState(({ initialState }) => {
-      const idx = this.findIndexByID(id)
+  const timerOn = (id, e) => {
+    if (e) e.stopPropagation()
 
-      const modifiedTaskData = {
-        ...initialState[idx],
-        description,
-      }
-      const modifiedTasksData = [...initialState.slice(0, idx), modifiedTaskData, ...initialState.slice(idx + 1)]
+    const task = tasksData.find((el) => el.id === id)
+    const isTimerOn = task ? task.isTimerOn : false
+    if (isTimerOn) return
 
-      return {
-        initialState: modifiedTasksData,
-      }
+    timers[id] = setInterval(() => {
+      setTasksData((tasksData) => {
+        const newTaskData = [...tasksData]
+        const task = newTaskData.find((el) => el.id === id)
+        task.time = task.time - 1
+        if (task.time === 0) {
+          clearInterval(timers[id])
+          task.showTimer = false
+        }
+        task.isTimerOn = true
+        return newTaskData
+      })
+    }, 1000)
+  }
+
+  const timerOff = (id, e) => {
+    if (e) e.stopPropagation()
+
+    clearInterval(timers[id])
+    delete timers[id]
+
+    setTasksData((tasksData) => {
+      const newTaskData = [...tasksData]
+      const task = newTaskData.find((el) => el.id === id)
+      task.isTimerOn = false
+      return newTaskData
     })
   }
 
-  onFinishEditing = (id) => {
-    this.setState(({ initialState }) => {
-      const index = this.findIndexByID(id)
+  const toggleCompleted = (id, e) => {
+    if (e.target.className === 'edit' || e.target.className === 'icon icon-edit') return
 
-      const modifiedTaskData = {
-        ...initialState[index],
-        isEditing: false,
-      }
-
-      const modifiedTasksData = [...initialState.slice(0, index), modifiedTaskData, ...initialState.slice(index + 1)]
-
-      return {
-        initialState: modifiedTasksData,
-      }
+    setTasksData((tasksData) => {
+      const newTaskData = [...tasksData]
+      const task = newTaskData.find((el) => el.id === id)
+      task.completed = !task.completed
+      return newTaskData
     })
   }
 
-  deleteItem = (id) => {
-    this.setState(({ initialState }) => {
-      const idx = this.findIndexByID(id)
-      const newArray = [...initialState.slice(0, idx), ...initialState.slice(idx + 1)]
+  const clearCompleted = () => {
+    tasksData.filter((el) => el.completed).forEach((task) => deleteTask(task.id))
+  }
 
-      return {
-        initialState: newArray,
-      }
+  const handleInputChange = (id, e) => {
+    setTasksData((tasksData) => {
+      const newTaskData = [...tasksData]
+      const task = newTaskData.find((el) => el.id === id)
+      task.label = e.target.value
+      return newTaskData
     })
   }
 
-  editProperty = (property, id) => {
-    this.setState(({ initialState }) => {
-      const idx = this.findIndexByID(id)
+  const active = tasksData.filter((el) => !el.completed).length
 
-      const modifiedTaskData = {
-        ...initialState[idx],
-        [property]: !initialState[idx][property],
-      }
-      const modifiedTasksData = [...initialState.slice(0, idx), modifiedTaskData, ...initialState.slice(idx + 1)]
-      return {
-        initialState: modifiedTasksData,
-      }
-    })
+  let tasks
+
+  if (filter === 'all') {
+    tasks = tasksData
+  }
+  if (filter === 'active') {
+    tasks = tasksData.filter((el) => !el.completed)
+  }
+  if (filter === 'completed') {
+    tasks = tasksData.filter((el) => el.completed)
   }
 
-  clearCompleted = () => {
-    const active = this.state.initialState.filter((task) => !task.isDone)
-
-    this.setState({
-      initialState: active,
-    })
-  }
-
-  countTaskActive = () => {
-    return this.state.initialState.filter((task) => !task.isDone).length
-  }
-
-  handleFilterChange = (filter) => {
-    this.setState({
-      filter,
-    })
-  }
-
-  state = {
-    initialState: this.props.state.initialState.map((task) => {
-      return this.createTask(task)
-    }),
-    filter: this.props.filter,
-  }
-
-  render() {
-    return (
-      <div>
-        <section className="todoapp">
-          <header className="header">
-            <h1>todos</h1>
-            <NewTaskForm addTask={this.addTask} />
-          </header>
-          <section className="main">
-            <TaskList
-              tasks={this.state.initialState}
-              filter={this.state.filter}
-              onDeleted={this.deleteItem}
-              onEditProperty={this.editProperty}
-              onChangeDescription={this.onChangeDescription}
-              onFinishEditing={this.onFinishEditing}
-            />
-            <Footer
-              filter={this.state.filter}
-              onFilterChange={this.handleFilterChange}
-              taskCount={this.countTaskActive}
-              clearCompleted={this.clearCompleted}
-            />
-          </section>
+  return (
+    <div>
+      <section className="todoapp">
+        <header className="header">
+          <h1>todos</h1>
+          <NewTaskForm addTask={addTask} />
+        </header>
+        <section className="main">
+          <TaskList
+            tasks={tasks}
+            deleteTask={deleteTask}
+            toggleCompleted={toggleCompleted}
+            handleInputChange={handleInputChange}
+            timerOn={timerOn}
+            timerOff={timerOff}
+          />
+          <Footer active={active} handleFilterChange={(filter) => setFilter(filter)} clearCompleted={clearCompleted} />
         </section>
-      </div>
-    )
-  }
-}
-
-App.defaultProps = {
-  initialState: [],
-  filter: 'All',
-}
-
-App.propTypes = {
-  initialState: PropTypes.arrayOf(PropTypes.object),
-  filter: PropTypes.oneOf(['All', 'Active', 'Completed']),
+      </section>
+    </div>
+  )
 }
