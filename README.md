@@ -1,2 +1,2 @@
 # Kata-ToDo
-https://kata-to-do.vercel.app/
+https://vercel.com/as-projects-33c68d2b/kata-to-do
